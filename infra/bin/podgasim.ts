@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { PodgasimStack } from '../lib/podgasim-stack';
+import { PodgasimStack } from '../stacks/podgasim-stack';
 
 const app = new cdk.App();
 console.log("test")
