@@ -1,4 +1,11 @@
-import { Stack, StackProps, Duration } from "aws-cdk-lib";
+import {
+  Stack,
+  StackProps,
+  NestedStack,
+  NestedStackProps,
+  Duration,
+  CfnOutput,
+} from "aws-cdk-lib";
 import { Construct } from "constructs";
 import {
   PublicHostedZone,
@@ -14,10 +21,10 @@ import {
 // https://dev.to/aws-builders/automate-building-a-unique-domain-hosting-environment-with-aws-cdk-1dd1
 
 // THIS IS IT NATE: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway-readme.html#custom-domains
-export class DNSStack extends Stack {
+export class DNSStack extends NestedStack {
   domain: string;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props?: NestedStackProps) {
     super(scope, id, props);
 
     const apexDomain = "podgasim.com";
@@ -55,15 +62,18 @@ export class DNSStack extends Stack {
   }
 }
 
+class APIStack extends NestedStack {
+  constructor(scope: Construct, id: string, props?: NestedStackProps) {
+    super(scope, id, props);
+  }
+}
+
 export class PodgasimStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
-    // example resource
-    // const queue = new sqs.Queue(this, 'PodgasimQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
+    // new CfnOutput(this, "APIURL", {
+    //   value: `https://${restApi.restApiId}.execute-api.${this.region}.amazonaws.com/prod/pets`,
     // });
   }
 }
