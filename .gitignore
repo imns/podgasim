@@ -7,9 +7,8 @@ node_modules
 .cdk.staging
 cdk.out
 
-
-# Created by https://www.toptal.com/developers/gitignore/api/macos,windows,linux,git,sass,node,vue,react
-# Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,linux,git,sass,node,vue,react
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,windows,linux,git,sass,node,vue,react
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,macos,windows,linux,git,sass,node,vue,react
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -233,6 +232,31 @@ sketch
 *.sass.map
 *.scss.map
 
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
+
+# Support for Project snippet scope
+.vscode/*.code-snippets
+
+# Ignore code-workspaces
+*.code-workspace
+
 ### Vue ###
 # gitignore template for Vue.js projects
 #
@@ -270,4 +294,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/macos,windows,linux,git,sass,node,vue,react
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,macos,windows,linux,git,sass,node,vue,react

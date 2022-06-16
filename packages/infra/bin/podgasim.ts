@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { PodgasimStack } from '../lib/podgasim-stack';
+import { PodgasimStack } from '../stacks/podgasim-stack';
 
 const app = new cdk.App();
+console.log("test")
 new PodgasimStack(app, 'PodgasimStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
