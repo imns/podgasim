@@ -1,0 +1,31 @@
+{
+  "name": "podgasim",
+  "private": true,
+  "devDependencies": {
+    "lerna": "^5.1.4",
+    "nx": "^14.3.5",
+    "rimraf": "^3.0.2"
+  },
+  "description": "podcast links for everyone",
+  "version": "1.0.0",
+  "scripts": {
+    "bootstrap": "lerna bootstrap --hoist --no-ci",
+    "build": "lerna exec npm run build",
+    "dev": "lerna exec npm run dev --parallel",
+    "clean:dist": "lerna exec -- rimraf ./dist",
+    "format": "lerna exec npm run format",
+    "test": "lerna run test",
+    "watch": "lerna run --parallel watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imns/podgasim.git"
+  },
+  "keywords": [],
+  "author": "Nate Smith (https://imns.co/)",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/imns/podgasim/issues"
+  },
+  "homepage": "https://github.com/imns/podgasim#readme"
+}
