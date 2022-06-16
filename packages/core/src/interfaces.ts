@@ -1,3 +1,7 @@
+/* 
+    APPLE / ITUNES
+*/
+
 export enum ItunesWrapperType {
   Track = "track",
   Collection = "collection",
@@ -17,34 +21,34 @@ export interface ItunesSearchResult {
   collectionId: number;
   trackId: number;
 
-  artistName: string;
-  collectionName: string;
-  trackName: string;
-  collectionCensoredName: string;
-  trackCensoredName: string;
-  collectionViewUrl: string;
-  feedUrl: string;
-  trackViewUrl: string;
-  artworkUrl30: string;
-  artworkUrl60: string;
-  artworkUrl100: string;
-  artworkUrl600: string;
-  collectionPrice: number;
-  trackPrice: number;
-  trackRentalPrice: number;
-  collectionHdPrice: number;
-  trackHdPrice: number;
-  trackHdRentalPrice: number;
-  releaseDate: string;
-  collectionExplicitness: ItunesExplicitnes;
-  trackExplicitness: ItunesExplicitnes;
-  trackCount: string;
-  country: string;
-  currency: string;
-  primaryGenreName: string;
-  contentAdvisoryRating: string;
-  genreIds: string[];
-  genres: string[];
+  artistName?: string;
+  collectionName?: string;
+  trackName?: string;
+  collectionCensoredName?: string;
+  trackCensoredName?: string;
+  collectionViewUrl?: string;
+  feedUrl?: string;
+  trackViewUrl?: string;
+  artworkUrl30?: string;
+  artworkUrl60?: string;
+  artworkUrl100?: string;
+  artworkUrl600?: string;
+  collectionPrice?: number;
+  trackPrice?: number;
+  trackRentalPrice?: number;
+  collectionHdPrice?: number;
+  trackHdPrice?: number;
+  trackHdRentalPrice?: number;
+  releaseDate?: string;
+  collectionExplicitness?: ItunesExplicitnes;
+  trackExplicitness?: ItunesExplicitnes;
+  trackCount?: string;
+  country?: string;
+  currency?: string;
+  primaryGenreName?: string;
+  contentAdvisoryRating?: string;
+  genreIds?: string[];
+  genres?: string[];
 }
 
 export enum ItunesEntityPodcast {
@@ -82,10 +86,16 @@ export interface ISearchOptions {
   limit?: number;
 
   // Language to return the results in. (default is "en_us")
-  lang?: "en_us" | "ja_jp";
+  lang?: "en_us";
 
   explicit: true;
+}
 
-  // Converts object to URI safe parameters
-  toURI?: () => string;
+export enum ItunesLookupType {
+  ID = "id",
+  AMGARTISTID = "amgArtistId",
+  AMGALBUMID = "amgAlbumId",
+  AMGVIDEOID = "amgVideoId",
+  UPC = "upc",
+  ISBN = "isbn",
 }
