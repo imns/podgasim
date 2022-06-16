@@ -1,26 +1,41 @@
 {
-  "name": "podgasim-core",
+  "name": "core",
   "version": "1.0.0",
   "description": "Core functionality ",
-  "author": "Nate Smith <nate@falconlaboratories.io>",
+  "author": "Nate Smith <contact@imns.co>",
   "homepage": "https://github.com/imns/podgasim/tree/main/packages/core#readme",
-  "license": "ISC",
   "main": "src/index.js",
   "directories": {
-    "lib": "lib",
+    "src": "src",
     "test": "__tests__"
   },
   "files": [
-    "lib"
+    "src"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/imns/podgasim.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/imns/podgasim/issues"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.1",
+    "@types/node": "^18.0.0",
+    "@types/prettier": "^2.6.3",
+    "jest": "^28.1.1",
+    "ts-jest": "^28.0.5",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
+  },
+  "dependencies": {
+    "@dvori/core": "^1.0.3",
+    "@dvori/plugins": "^1.0.3",
+    "@dvori/utils": "^1.0.3"
   }
 }

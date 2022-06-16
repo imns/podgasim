@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/imns/podgasim/issues"
   },
-  "homepage": "https://github.com/imns/podgasim#readme"
+  "homepage": "https://github.com/imns/podgasim#readme",
+  "dependencies": {
+    "@types/node": "^18.0.0"
+  }
 }
