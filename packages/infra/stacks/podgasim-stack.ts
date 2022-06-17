@@ -1,3 +1,5 @@
+import * as path from "path";
+
 import {
   Stack,
   StackProps,
@@ -16,6 +18,16 @@ import {
   ValidationMethod,
 } from "aws-cdk-lib/aws-certificatemanager";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
+
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+
+import {
+  CorsHttpMethod,
+  HttpApi,
+  HttpMethod,
+  DomainName,
+} from "@aws-cdk/aws-apigatewayv2-alpha";
+import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 
 // DNS
 // https://dev.to/aws-builders/automate-building-a-unique-domain-hosting-environment-with-aws-cdk-1dd1
@@ -61,16 +73,61 @@ export class DNSStack extends NestedStack {
     });
   }
 }
-
+declare const dn: DomainName;
+declare const eventtFn: NodejsFunction;
+interface APIProps extends NestedStackProps {
+  domain: string;
+}
 class APIStack extends NestedStack {
-  constructor(scope: Construct, id: string, props?: NestedStackProps) {
+  constructor(scope: Construct, id: string, props?: APIProps) {
     super(scope, id, props);
+
+    const httpApi = new HttpApi(this, "HttpApi", {
+      defaultDomainMapping: {
+        domainName: dn,
+      },
+      corsPreflight: {
+        allowHeaders: ["Authorization"],
+        allowMethods: [
+          CorsHttpMethod.GET,
+          CorsHttpMethod.HEAD,
+          CorsHttpMethod.OPTIONS,
+          CorsHttpMethod.POST,
+        ],
+        allowOrigins: ["*"],
+        maxAge: Duration.days(10),
+      },
+    });
+
+    // lambda integration
+    const eventtFn = new NodejsFunction(this, "hello-function", {
+      entry: path.resolve(
+        path.dirname(__filename),
+        "../functions/determination-api/handler.ts"
+      ),
+      handler: "handler",
+    });
+
+    // Lambda Func Integration
+    const eventIntegration = new HttpLambdaIntegration(
+      "EventIntegration",
+      eventtFn
+    );
+
+    httpApi.addRoutes({
+      path: "/events",
+      methods: [HttpMethod.GET],
+      integration: eventIntegration,
+    });
   }
 }
 
 export class PodgasimStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    const { domain } = new DNSStack(this, "dns-stack");
+    new APIStack(this, "api-stack", { domain });
 
     // new CfnOutput(this, "APIURL", {
     //   value: `https://${restApi.restApiId}.execute-api.${this.region}.amazonaws.com/prod/pets`,
