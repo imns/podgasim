@@ -3,6 +3,7 @@
   "private": true,
   "devDependencies": {
     "lerna": "^5.1.4",
+    "lerna-update-wizard": "^1.1.2",
     "nx": "^14.3.5",
     "rimraf": "^3.0.2"
   },
@@ -15,7 +16,8 @@
     "clean:dist": "lerna exec -- rimraf ./dist",
     "format": "lerna exec npm run format",
     "test": "lerna run test",
-    "watch": "lerna run --parallel watch"
+    "watch": "lerna run --parallel watch",
+    "update": "npx lernaupdate"
   },
   "repository": {
     "type": "git",
