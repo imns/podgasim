@@ -16,6 +16,7 @@ import {
   ValidationMethod,
 } from "aws-cdk-lib/aws-certificatemanager";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { LambdaRestApi, HttpIntegration } from "aws-cdk-lib/aws-apigateway";
 
 // DNS
 // https://dev.to/aws-builders/automate-building-a-unique-domain-hosting-environment-with-aws-cdk-1dd1
@@ -65,6 +66,12 @@ export class DNSStack extends NestedStack {
 class APIStack extends NestedStack {
   constructor(scope: Construct, id: string, props?: NestedStackProps) {
     super(scope, id, props);
+
+    // declare const backend: lambda.Function;
+    const api = new LambdaRestApi(this, "myapi", {
+      handler: backend,
+      proxy: false,
+    });
   }
 }
 
