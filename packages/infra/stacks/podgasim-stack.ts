@@ -87,7 +87,7 @@ class APIStack extends NestedStack {
         domainName: dn,
       },
       corsPreflight: {
-        allowHeaders: ["Authorization"],
+        allowHeaders: ["Content-Type", "Authorization"],
         allowMethods: [
           CorsHttpMethod.GET,
           CorsHttpMethod.HEAD,
@@ -119,6 +119,28 @@ class APIStack extends NestedStack {
       methods: [HttpMethod.GET],
       integration: eventIntegration,
     });
+
+    // CLOUDFRONT
+    // const feCf = new CloudFrontWebDistribution(this, "MyCf", {
+    //   defaultRootObject: "/",
+    //   originConfigs: [
+    //     {
+    //       customOriginSource: {
+    //         domainName: `${httpApi.httpApiId}.execute-api.${this.region}.${this.urlSuffix}`,
+    //       },
+    //       behaviors: [
+    //         {
+    //           isDefaultBehavior: true,
+    //         },
+    //       ],
+    //     },
+    //   ],
+    //   enableIpV6: true,
+    // });
+
+    // new cdk.CfnOutput(this, "myOut", {
+    //   value: feCf.distributionDomainName,
+    // });
   }
 }
 
