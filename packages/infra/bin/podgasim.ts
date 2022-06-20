@@ -3,6 +3,9 @@ import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
 import { PodgasimStack } from "../stacks/podgasim-stack";
 
+import "dotenv/config";
+console.log(process.env.NATE);
+
 const app = new cdk.App();
 console.log("test");
 new PodgasimStack(app, "PodgasimStack", {
