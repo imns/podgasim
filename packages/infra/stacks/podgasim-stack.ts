@@ -1,9 +1,5 @@
 /* 
   TODO:
-    - Sort out the A records, domain, certs, hosted zone, dns stuff
-    - Create the lambda Funcs
-    - Setup AWS Vault
-    - Integrate dotenv somehow ... or something similar
     - Decide on a naming convention
     - Pass in variables and name everything
     - Bootstrap the CDK
@@ -32,10 +28,9 @@ import {
 } from "aws-cdk-lib/aws-route53";
 import {
   DnsValidatedCertificate,
-  Certificate,
-  ValidationMethod,
+  CertificateValidation,
 } from "aws-cdk-lib/aws-certificatemanager";
-import { ApiGateway } from "aws-cdk-lib/aws-route53-targets";
+import { ApiGatewayv2DomainProperties } from "aws-cdk-lib/aws-route53-targets";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 // import { LambdaRestApi, HttpIntegration } from "aws-cdk-lib/aws-apigateway";
 
@@ -64,34 +59,36 @@ export class DNSStack extends NestedStack {
 
     const domain = props.domain;
 
+    console.info(`SETTING UP DNS FOR DOMAIN: ${domain}`);
+
     // as above we create a hostedzone for the subdomain
-    const hostedZone = new PublicHostedZone(this, "PublicHostedZone", {
-      zoneName: domain,
-    });
-    // add a ZoneDelegationRecord so that requests for *.picture.bahr.dev
-    // and picture.bahr.dev are handled by our newly created HostedZone
-    const nameServers: string[] = hostedZone.hostedZoneNameServers!;
-    // const rootZone = PublicHostedZone.fromLookup(this, "Zone", {
+    // const hostedZone = new PublicHostedZone(this, "PublicHostedZone", {
+    //   zoneName: domain,
+    // });
+    // const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
     //   domainName: domain,
     // });
-    new ZoneDelegationRecord(this, "Delegation", {
-      recordName: domain,
-      nameServers,
-      zone: hostedZone,
-      ttl: Duration.minutes(1),
-    });
+    // add a ZoneDelegationRecord so that requests for *.picture.bahr.dev
+    // and picture.bahr.dev are handled by our newly created HostedZone
+    // const nameServers: string[] = hostedZone.hostedZoneNameServers!;
+    // new ZoneDelegationRecord(this, "Delegation", {
+    //   recordName: domain,
+    //   nameServers,
+    //   zone: hostedZone,
+    //   ttl: Duration.minutes(1),
+    // });
 
-    const certificate = new DnsValidatedCertificate(this, "Certificate", {
-      region: "us-east-1",
-      hostedZone: hostedZone,
-      domainName: domain,
-      subjectAlternativeNames: [`*.${domain}`],
-      // validationDomains: {
-      //   [this.domain]: this.domain,
-      //   [`*.${this.domain}`]: this.domain,
-      // },
-      // validationMethod: ValidationMethod.DNS,
-    });
+    // const certificate = new DnsValidatedCertificate(this, "Certificate", {
+    //   region: "us-east-1",
+    //   hostedZone: hostedZone,
+    //   domainName: domain,
+    //   subjectAlternativeNames: [`*.${domain}`],
+    //   // validationDomains: {
+    //   //   [this.domain]: this.domain,
+    //   //   [`*.${this.domain}`]: this.domain,
+    //   // },
+    //   // validationMethod: ValidationMethod.DNS,
+    // });
 
     // new ARecord(this, "AliasRecord", {
     //   recordName: domain,
@@ -99,10 +96,10 @@ export class DNSStack extends NestedStack {
     //   target: RecordTarget.fromAlias(new ApiGateway(restApi)),
     // });
 
-    this.dn = new DomainName(this, "DN", {
-      domainName: domain,
-      certificate: certificate,
-    });
+    // this.dn = new DomainName(this, "DN", {
+    //   domainName: domain,
+    //   certificate: certificate,
+    // });
   }
 }
 
@@ -122,16 +119,38 @@ interface CDKContext {
 }
 
 interface APIStackProps extends NestedStackProps {
-  dn: DomainName;
+  domain: string;
 }
 class APIStack extends NestedStack {
+  apiURL: string;
+
   constructor(scope: Construct, id: string, props: APIStackProps) {
     super(scope, id, props);
 
+    ///////////////////////////////
+    // Part 1
+    // const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
+    //   domainName: props.domain,
+    // });
+
+    // const apiCert = new DnsValidatedCertificate(this, "ApiSSL", {
+    //   domainName: props.domain,
+    //   hostedZone,
+    //   validation: CertificateValidation.fromDns(hostedZone),
+    //   region: "us-east-1",
+    // });
+
+    ///////////////////////////////
+    // Part 2
+    // const dn = new DomainName(this, "api_domain", {
+    //   domainName: props.domain,
+    //   certificate: apiCert,
+    // });
+
     const httpApi = new HttpApi(this, "HttpApi", {
-      defaultDomainMapping: {
-        domainName: props.dn,
-      },
+      // defaultDomainMapping: {
+      //   domainName: dn,
+      // },
       corsPreflight: {
         allowHeaders: ["Content-Type", "Authorization"],
         allowMethods: [
@@ -144,6 +163,8 @@ class APIStack extends NestedStack {
         maxAge: Duration.days(10),
       },
     });
+
+    this.apiURL = httpApi.url!;
 
     // lambda integration
     const eventtFn = new NodejsFunction(this, "hello-function", {
@@ -165,6 +186,18 @@ class APIStack extends NestedStack {
       methods: [HttpMethod.GET],
       integration: eventIntegration,
     });
+
+    // ///////////////////////////////
+    // // Part 3
+    // new ARecord(this, "apiAliasRecord", {
+    //   zone: hostedZone,
+    //   target: RecordTarget.fromAlias(
+    //     new ApiGatewayv2DomainProperties(
+    //       dn.regionalDomainName,
+    //       dn.regionalHostedZoneId
+    //     )
+    //   ),
+    // });
 
     // CLOUDFRONT
     // const feCf = new CloudFrontWebDistribution(this, "MyCf", {
@@ -198,11 +231,13 @@ export class PodgasimStack extends Stack {
   constructor(scope: Construct, id: string, props: PodgasimStackProps) {
     super(scope, id, props);
 
-    const { dn } = new DNSStack(this, "dns-stack", { domain: props.domain });
-    new APIStack(this, "api-stack", { dn });
+    // const { dn } = new DNSStack(this, "dns-stack", { domain: props.domain });
+    const { apiURL } = new APIStack(this, "api-stack", {
+      domain: props.domain,
+    });
 
-    // new CfnOutput(this, "APIURL", {
-    //   value: `https://${restApi.restApiId}.execute-api.${this.region}.amazonaws.com/prod/pets`,
-    // });
+    new CfnOutput(this, "APIURL", {
+      value: apiURL,
+    });
   }
 }
