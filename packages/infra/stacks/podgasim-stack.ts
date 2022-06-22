@@ -27,6 +27,7 @@ import {
   HostedZone,
 } from "aws-cdk-lib/aws-route53";
 import {
+  Certificate,
   DnsValidatedCertificate,
   CertificateValidation,
 } from "aws-cdk-lib/aws-certificatemanager";
@@ -106,17 +107,17 @@ export class DNSStack extends NestedStack {
 // declare const dn: DomainName;
 // declare const eventtFn: NodejsFunction;
 
-interface CDKContext {
-  appName: string;
-  region: string;
-  environment: string;
-  branchName: string;
-  accountNumber: string;
-  baseDomain: string;
-  apiDomain: string;
-  hostedZoneId: string;
-  regionalCertArn: string;
-}
+// interface CDKContext {
+//   appName: string;
+//   region: string;
+//   environment: string;
+//   branchName: string;
+//   accountNumber: string;
+//   baseDomain: string;
+//   apiDomain: string;
+//   hostedZoneId: string;
+//   regionalCertArn: string;
+// }
 
 interface APIStackProps extends NestedStackProps {
   domain: string;
@@ -147,10 +148,28 @@ class APIStack extends NestedStack {
     //   certificate: apiCert,
     // });
 
+    const domain = props.domain;
+    const subdomain = `api.${domain}`;
+
+    const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
+      domainName: domain,
+    });
+
+    const certificate = new Certificate(this, "Certificate", {
+      domainName: domain,
+      subjectAlternativeNames: [subdomain],
+      validation: CertificateValidation.fromDns(hostedZone),
+    });
+
+    const domainName = new DomainName(this, "DomainName", {
+      domainName: subdomain,
+      certificate: certificate,
+    });
+
     const httpApi = new HttpApi(this, "HttpApi", {
-      // defaultDomainMapping: {
-      //   domainName: dn,
-      // },
+      defaultDomainMapping: {
+        domainName: domainName,
+      },
       corsPreflight: {
         allowHeaders: ["Content-Type", "Authorization"],
         allowMethods: [
@@ -173,6 +192,17 @@ class APIStack extends NestedStack {
         "../functions/slack-events/index.ts"
       ),
       handler: "handler",
+    });
+
+    new ARecord(this, "HttpApiAliasRecord", {
+      zone: hostedZone,
+      target: RecordTarget.fromAlias(
+        // >> Error happens here
+        new ApiGatewayv2DomainProperties(
+          domainName.regionalDomainName,
+          domainName.regionalHostedZoneId
+        )
+      ),
     });
 
     // Lambda Func Integration
