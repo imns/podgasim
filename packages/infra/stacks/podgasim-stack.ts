@@ -41,7 +41,7 @@ import {
   CorsHttpMethod,
   HttpApi,
   HttpMethod,
-  DomainName,
+  DomainName as HTTPAPIDomainName,
 } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 
@@ -53,8 +53,6 @@ interface DNSStackProps extends NestedStackProps {
   domain: string;
 }
 export class DNSStack extends NestedStack {
-  dn: DomainName;
-
   constructor(scope: Construct, id: string, props: DNSStackProps) {
     super(scope, id, props);
 
@@ -151,25 +149,29 @@ class APIStack extends NestedStack {
     const domain = props.domain;
     const subdomain = `api.${domain}`;
 
-    const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
-      domainName: domain,
+    const hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
+      zoneName: domain,
+      hostedZoneId: "Z10029762GWC6ZITOYDF",
     });
 
-    const certificate = new Certificate(this, "Certificate", {
-      domainName: domain,
+    const certificate = new DnsValidatedCertificate(this, "Certificate", {
+      domainName: `*.${hostedZone.zoneName}`,
       subjectAlternativeNames: [subdomain],
+      hostedZone: hostedZone,
       validation: CertificateValidation.fromDns(hostedZone),
+      region: "us-east-1",
     });
 
-    const domainName = new DomainName(this, "DomainName", {
-      domainName: subdomain,
+    const dn = new HTTPAPIDomainName(this, "APIDomainName", {
+      domainName: domain,
       certificate: certificate,
     });
 
     const httpApi = new HttpApi(this, "HttpApi", {
       defaultDomainMapping: {
-        domainName: domainName,
+        domainName: dn,
       },
+      createDefaultStage: true,
       corsPreflight: {
         allowHeaders: ["Content-Type", "Authorization"],
         allowMethods: [
@@ -183,49 +185,49 @@ class APIStack extends NestedStack {
       },
     });
 
-    this.apiURL = httpApi.url!;
+    // this.apiURL = httpApi.url!;
 
-    // lambda integration
-    const eventtFn = new NodejsFunction(this, "hello-function", {
-      entry: path.resolve(
-        path.dirname(__filename),
-        "../functions/slack-events/index.ts"
-      ),
-      handler: "handler",
-    });
+    // // lambda integration
+    // const eventtFn = new NodejsFunction(this, "hello-function", {
+    //   entry: path.resolve(
+    //     path.dirname(__filename),
+    //     "../functions/slack-events/index.ts"
+    //   ),
+    //   handler: "handler",
+    // });
 
-    new ARecord(this, "HttpApiAliasRecord", {
-      zone: hostedZone,
-      target: RecordTarget.fromAlias(
-        // >> Error happens here
-        new ApiGatewayv2DomainProperties(
-          domainName.regionalDomainName,
-          domainName.regionalHostedZoneId
-        )
-      ),
-    });
+    // // new ARecord(this, "HttpApiAliasRecord", {
+    // //   zone: hostedZone,
+    // //   target: RecordTarget.fromAlias(
+    // //     // >> Error happens here
+    // //     new ApiGatewayv2DomainProperties(
+    // //       domainName.regionalDomainName,
+    // //       domainName.regionalHostedZoneId
+    // //     )
+    // //   ),
+    // // });
 
-    // Lambda Func Integration
-    const eventIntegration = new HttpLambdaIntegration(
-      "EventIntegration",
-      eventtFn
-    );
+    // // Lambda Func Integration
+    // const eventIntegration = new HttpLambdaIntegration(
+    //   "EventIntegration",
+    //   eventtFn
+    // );
 
-    httpApi.addRoutes({
-      path: "/events",
-      methods: [HttpMethod.GET],
-      integration: eventIntegration,
-    });
+    // httpApi.addRoutes({
+    //   path: "/events",
+    //   methods: [HttpMethod.GET],
+    //   integration: eventIntegration,
+    // });
 
-    // ///////////////////////////////
-    // // Part 3
-    // new ARecord(this, "apiAliasRecord", {
-    //   zone: hostedZone,
-    //   target: RecordTarget.fromAlias(
-    //     new ApiGatewayv2DomainProperties(
-    //       dn.regionalDomainName,
-    //       dn.regionalHostedZoneId
-    //     )
+    // // ///////////////////////////////
+    // // // Part 3
+    // // new ARecord(this, "apiAliasRecord", {
+    // //   zone: hostedZone,
+    // //   target: RecordTarget.fromAlias(
+    // //     new ApiGatewayv2DomainProperties(
+    // //       dn.regionalDomainName,
+    // //       dn.regionalHostedZoneId
+    // //     )
     //   ),
     // });
 
@@ -266,8 +268,8 @@ export class PodgasimStack extends Stack {
       domain: props.domain,
     });
 
-    new CfnOutput(this, "APIURL", {
-      value: apiURL,
-    });
+    // new CfnOutput(this, "APIURL", {
+    //   value: apiURL,
+    // });
   }
 }
