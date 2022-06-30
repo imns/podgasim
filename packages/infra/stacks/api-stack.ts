@@ -44,7 +44,7 @@ export class HTTPAPIStack extends Stack {
         this.apiURL = httpApi.url!;
 
         // lambda integration
-        const eventtFn = new NodejsFunction(this, "hello-function", {
+        const eventFn = new NodejsFunction(this, "slack-events-function", {
             entry: path.resolve(
                 path.dirname(__filename),
                 "../functions/slack-events/index.ts"
@@ -55,12 +55,12 @@ export class HTTPAPIStack extends Stack {
         // Lambda Func Integration
         const eventIntegration = new HttpLambdaIntegration(
             "EventIntegration",
-            eventtFn
+            eventFn
         );
 
         httpApi.addRoutes({
             path: "/events",
-            methods: [HttpMethod.GET],
+            methods: [HttpMethod.POST],
             integration: eventIntegration
         });
 
