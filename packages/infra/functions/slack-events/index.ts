@@ -12,6 +12,9 @@ export async function handler(
         console.log(`EVENT TYPE: ${eventData.type!}`);
         if (eventData?.type === "url_verification") {
             return {
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     challenge: eventData.challenge
                 }),
@@ -22,7 +25,10 @@ export async function handler(
         if (eventData?.type === "event_callback") {
             console.log(`API EVENT TYPE: ${eventData.event.type!}`);
             return {
-                body: "",
+                headers: {
+                    "Content-Type": "text/html"
+                },
+                body: "success",
                 statusCode: 200
             };
         }
@@ -32,6 +38,9 @@ export async function handler(
     } catch (e) {
         console.error(e);
         return {
+            headers: {
+                "Content-Type": "text/html"
+            },
             body: "internal server error",
             statusCode: 500
         };
