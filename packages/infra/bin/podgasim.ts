@@ -1,15 +1,32 @@
 #!/usr/bin/env node
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
-import { PodgasimStack } from "../stacks/podgasim-stack";
+import { DNSStack } from "../stacks/dns-stack";
+import { HTTPAPIStack } from "../stacks/api-stack";
 
 import "dotenv/config";
 
-const app = new cdk.App();
-new PodgasimStack(app, "PodgasimStack", {
-  env: {
+// Default ENV
+const env = {
     account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION,
-  },
-  domain: process.env.DOMAIN_NAME || "",
+    region: process.env.CDK_DEFAULT_REGION
+};
+
+// Helper Func to create the stack name
+const stack = (name: string) =>
+    `${process.env.APP_NAME}-${name}-${process.env.STAGE}`;
+
+const app = new cdk.App();
+
+const { dn: domainName } = new DNSStack(app, stack("DNSStack"), {
+    domain: process.env.DOMAIN_NAME!,
+    hostedZoneId: process.env.HOSTED_ZONE_ID!,
+    env
 });
+
+new HTTPAPIStack(app, stack("HTTPAPIStack"), {
+    domainName,
+    env
+});
+
+app.synth();
