@@ -1,36 +1,38 @@
 {
-  "name": "podgasim",
-  "private": true,
-  "devDependencies": {
-    "lerna": "^5.1.4",
-    "lerna-update-wizard": "^1.1.2",
-    "nx": "^14.3.5",
-    "rimraf": "^3.0.2"
-  },
-  "description": "podcast links for everyone",
-  "version": "1.0.0",
-  "scripts": {
-    "bootstrap": "lerna bootstrap --hoist --no-ci",
-    "build": "lerna exec npm run build",
-    "dev": "lerna exec npm run dev --parallel",
-    "clean:dist": "lerna exec -- rimraf ./dist",
-    "format": "lerna exec npm run format",
-    "test": "lerna run test",
-    "watch": "lerna run --parallel watch",
-    "update": "npx lernaupdate"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/imns/podgasim.git"
-  },
-  "keywords": [],
-  "author": "Nate Smith (https://imns.co/)",
-  "license": "MPL-2.0",
-  "bugs": {
-    "url": "https://github.com/imns/podgasim/issues"
-  },
-  "homepage": "https://github.com/imns/podgasim#readme",
-  "dependencies": {
-    "@types/node": "^18.0.0"
-  }
+    "name": "podgasim",
+    "private": true,
+    "devDependencies": {
+        "lerna": "^5.1.4",
+        "lerna-update-wizard": "^1.1.2",
+        "nx": "^14.3.5",
+        "rimraf": "^3.0.2"
+    },
+    "description": "podcast links for everyone",
+    "version": "1.0.0",
+    "scripts": {
+        "postinstall": "lerna exec npm install",
+        "bootstrap": "lerna bootstrap --no-ci",
+        "build": "lerna exec npm run build",
+        "dev": "lerna exec npm run dev --parallel",
+        "clean:dist": "lerna exec -- rimraf ./dist",
+        "format": "lerna exec npm run format",
+        "test": "lerna run test --",
+        "watch": "lerna run --parallel watch --stream",
+        "update": "npx lerna update",
+        "cdk": "lerna exec npm run cdk --scope=infra --"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/imns/podgasim.git"
+    },
+    "keywords": [],
+    "author": "Nate Smith (https://imns.co/)",
+    "license": "MPL-2.0",
+    "bugs": {
+        "url": "https://github.com/imns/podgasim/issues"
+    },
+    "homepage": "https://github.com/imns/podgasim#readme",
+    "dependencies": {
+        "@types/node": "^18.0.0"
+    }
 }
