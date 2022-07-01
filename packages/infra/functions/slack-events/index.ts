@@ -33,6 +33,7 @@ export async function handler(
 
             // send to event bridge
             await putEvent(eventData.event);
+            console.log("Added event data to event bus");
 
             return {
                 headers: {
@@ -58,19 +59,26 @@ export async function handler(
 }
 
 async function putEvent(event: any) {
-    // BIG TODO
-    const params = {
-        Entries: [
-            {
-                // DetailType: "httpcall",
-                EventBusName: EVENT_BUS_NAME,
-                Source: EVENT_BUS_SOURCE,
-                Time: new Date(),
-                // Main event body
-                Detail: JSON.stringify(event)
-            }
-        ]
-    };
+    try {
+        // BIG TODO
+        const params = {
+            Entries: [
+                {
+                    // DetailType: "httpcall",
+                    EventBusName: EVENT_BUS_NAME,
+                    Source: EVENT_BUS_SOURCE,
+                    Time: new Date(),
+                    // Main event body
+                    Detail: JSON.stringify(event)
+                }
+            ]
+        };
 
-    const result = await eventBridge.putEvents(params).promise();
+        const result = await eventBridge.putEvents(params).promise();
+        console.log("Results of  eventBridge.putEvents: ");
+        console.log(JSON.stringify(result, null, 2));
+    } catch (e) {
+        console.log("ERROR in putEvent()");
+        throw e;
+    }
 }
