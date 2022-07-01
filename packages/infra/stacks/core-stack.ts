@@ -53,7 +53,7 @@ export class CoreStack extends Stack {
         this.apiURL = httpApi.url!;
 
         // lambda integration
-        const slackEventFn = new NodejsFunction(this, "SlackEventsHandler", {
+        const slackEventFn = new NodejsFunction(this, "slack-events-handler", {
             entry: path.resolve(
                 path.dirname(__filename),
                 "../functions/slack-events/index.ts"
@@ -88,16 +88,18 @@ export class CoreStack extends Stack {
     }
 
     setupEventBus() {
-        const EVENT_BUS_SOURCE = process.env.DOMAIN_NAME?.split("")
+        // Reverse the Domain Name, like a Java Package (I feel gross about it too)
+        const EVENT_BUS_SOURCE = process.env
+            .DomainName!.split(".")
             .reverse()
-            .join("");
+            .join(".");
 
         const bus = new events.EventBus(this, "EventBus", {});
-        const slackRule = new events.Rule(this, "slackRule", {
+        const slackRule = new events.Rule(this, "SlackEventRule", {
             eventBus: bus,
             description: "Event Rule For Slack Link Shared Events",
             eventPattern: {
-                source: [EVENT_BUS_SOURCE!]
+                source: [EVENT_BUS_SOURCE]
             }
         });
 
@@ -109,7 +111,7 @@ export class CoreStack extends Stack {
             handler: "handler",
             environment: {
                 EVENT_BUS_NAME: bus.eventBusName,
-                EVENT_BUS_SOURCE: EVENT_BUS_SOURCE!
+                EVENT_BUS_SOURCE: EVENT_BUS_SOURCE
             }
         });
 

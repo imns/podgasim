@@ -9,7 +9,8 @@ import "dotenv/config";
 // Default ENV
 const env = {
     account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION
+    // region: process.env.CDK_DEFAULT_REGION
+    region: "us-east-2"
 };
 
 // Helper Func to create the stack name
