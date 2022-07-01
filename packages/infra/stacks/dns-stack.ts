@@ -44,8 +44,8 @@ export class DNSStack extends Stack {
             domainName: domain,
             subjectAlternativeNames: [`*.${domain}`],
             hostedZone: hostedZone,
-            validation: CertificateValidation.fromDns(hostedZone),
-            region: "us-east-2"
+            validation: CertificateValidation.fromDns(hostedZone)
+            // region: "us-east-1"
         });
 
         this.dn = new DomainName(this, "APIDomainName", {

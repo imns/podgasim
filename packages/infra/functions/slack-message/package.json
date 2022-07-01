@@ -1,0 +1,29 @@
+{
+  "name": "slack-message",
+  "version": "1.0.0",
+  "description": "Posts Messages to Slack",
+  "main": "src/index.ts",
+  "type": "module",
+  "directories": {
+    "test": "tests",
+    "src": "src",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsc"
+  },
+  "private": true,
+  "devDependencies": {
+    "@types/jest": "^28.1.1",
+    "@types/node": "^18.0.0",
+    "@types/prettier": "^2.6.3",
+    "jest": "^28.1.1",
+    "ts-jest": "^28.0.5",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
+  },
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
+}

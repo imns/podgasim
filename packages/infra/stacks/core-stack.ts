@@ -100,7 +100,7 @@ export class CoreStack extends Stack {
         const slackMsgFn = new NodejsFunction(this, "slack-msg-handler", {
             entry: path.resolve(
                 path.dirname(__filename),
-                "../functions/slack-message/index.ts"
+                "../functions/slack-message/src/index.ts"
             ),
             handler: "handler"
         });
