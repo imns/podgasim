@@ -67,7 +67,7 @@ async function putEvent(event: any) {
         const params = {
             Entries: [
                 {
-                    // DetailType: "httpcall",
+                    DetailType: "Slack Event",
                     EventBusName: EVENT_BUS_NAME,
                     Source: EVENT_BUS_SOURCE,
                     Time: new Date(),
