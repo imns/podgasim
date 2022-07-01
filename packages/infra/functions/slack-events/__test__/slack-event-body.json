@@ -1,0 +1,35 @@
+{
+    "token": "L2nM5wb1Ku88zXiYQyuaYmdS",
+    "team_id": "T025PTVANPJ",
+    "api_app_id": "A03HNSQNALD",
+    "event": {
+        "type": "link_shared",
+        "user": "U025CNFTGG1",
+        "channel": "COMPOSER",
+        "message_ts": "U025CNFTGG1-96756861-9975-4a32-8998-f59c4357faac-b97e6475c573b11c2cdedab9f1267039b421e99c13c113a0b14cb954c168a506",
+        "links": [
+            {
+                "url": "https://podcasts.apple.com/us/podcast/project-unabom/id1627613321",
+                "domain": "podcasts.apple.com"
+            }
+        ],
+        "source": "composer",
+        "unfurl_id": "U025CNFTGG1-96756861-9975-4a32-8998-f59c4357faac-b97e6475c573b11c2cdedab9f1267039b421e99c13c113a0b14cb954c168a506",
+        "is_bot_user_member": true,
+        "event_ts": "1656648201.463537"
+    },
+    "type": "event_callback",
+    "event_id": "Ev03N11NDBAQ",
+    "event_time": 1656648201,
+    "authorizations": [
+        {
+            "enterprise_id": null,
+            "team_id": "T025PTVANPJ",
+            "user_id": "U03J0K44G7P",
+            "is_bot": true,
+            "is_enterprise_install": false
+        }
+    ],
+    "is_ext_shared_channel": false,
+    "event_context": "4-eyJldCI6Imxpbmtfc2hhcmVkIiwidGlkIjoiVDAyNVBUVkFOUEoiLCJhaWQiOiJBMDNITlNRTkFMRCIsImNpZCI6IkMwM05MVjlOUVNDIn0"
+}
