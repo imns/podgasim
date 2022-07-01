@@ -1,4 +1,7 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import { EventBridge } from "aws-sdk";
+
+const eventBridge = new EventBridge();
 
 export async function handler(
     event: APIGatewayProxyEventV2
@@ -24,6 +27,10 @@ export async function handler(
 
         if (eventData?.type === "event_callback") {
             console.log(`API EVENT TYPE: ${eventData.event.type!}`);
+
+            // send to event bridge
+            await putEvent(eventData.event);
+
             return {
                 headers: {
                     "Content-Type": "text/html"
@@ -45,4 +52,22 @@ export async function handler(
             statusCode: 500
         };
     }
+}
+
+async function putEvent(event: any) {
+    // BIG TODO
+    const params = {
+        Entries: [
+            {
+                DetailType: "httpcall",
+                EventBusName: "default",
+                Source: "cdkpatterns.eventbridge.circuitbreaker",
+                Time: new Date(),
+                // Main event body
+                Detail: JSON.stringify(event)
+            }
+        ]
+    };
+
+    const result = await eventBridge.putEvents(params).promise();
 }

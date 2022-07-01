@@ -2,7 +2,7 @@
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
 import { DNSStack } from "../stacks/dns-stack";
-import { HTTPAPIStack } from "../stacks/api-stack";
+import { CoreStack } from "../stacks/core-stack";
 
 import "dotenv/config";
 
@@ -24,7 +24,7 @@ const { dn: domainName } = new DNSStack(app, stack("DNSStack"), {
     env
 });
 
-new HTTPAPIStack(app, stack("HTTPAPIStack"), {
+new CoreStack(app, stack("CoreStack"), {
     domainName,
     env
 });

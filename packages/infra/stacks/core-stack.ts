@@ -14,18 +14,24 @@ import {
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { DomainName } from "@aws-cdk/aws-apigatewayv2-alpha";
 
-interface HTTPAPIStacktackProps extends StackProps {
+interface CoreStacktackProps extends StackProps {
     domainName: DomainName;
 }
 
-export class HTTPAPIStack extends Stack {
+export class CoreStack extends Stack {
     apiURL: string;
 
-    constructor(scope: Construct, id: string, props: HTTPAPIStacktackProps) {
+    constructor(scope: Construct, id: string, props: CoreStacktackProps) {
         super(scope, id, props);
 
         const domainNameConstruct = props.domainName;
 
+        this.setupAPI(domainNameConstruct);
+        this.setupEventBus();
+        this.setupDynamoDB();
+    }
+
+    setupAPI(domainNameConstruct: DomainName) {
         const httpApi = new HttpApi(this, "HttpApi", {
             defaultDomainMapping: {
                 domainName: domainNameConstruct
@@ -47,7 +53,7 @@ export class HTTPAPIStack extends Stack {
         this.apiURL = httpApi.url!;
 
         // lambda integration
-        const eventFn = new NodejsFunction(this, "slack-events-function", {
+        const slackEventFn = new NodejsFunction(this, "slack-events-handler", {
             entry: path.resolve(
                 path.dirname(__filename),
                 "../functions/slack-events/index.ts"
@@ -55,10 +61,18 @@ export class HTTPAPIStack extends Stack {
             handler: "handler"
         });
 
+        // We need to give your lambda permission to put events on our EventBridge
+        let eventPolicy = new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            resources: ["*"],
+            actions: ["events:PutEvents"]
+        });
+        slackEventFn.addToRolePolicy(eventPolicy);
+
         // Lambda Func Integration
         const eventIntegration = new HttpLambdaIntegration(
             "EventIntegration",
-            eventFn
+            slackEventFn
         );
 
         // API Routes
@@ -71,17 +85,9 @@ export class HTTPAPIStack extends Stack {
         new CfnOutput(this, "APIURL", {
             value: this.apiURL
         });
+    }
 
-        // EVENTS
-
-        // We need to give your lambda permission to put events on our EventBridge
-        let eventPolicy = new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            resources: ["*"],
-            actions: ["events:PutEvents"]
-        });
-        eventFn.addToRolePolicy(eventPolicy);
-
+    setupEventBus() {
         const bus = new events.EventBus(this, "EventBus", {});
         const slackRule = new events.Rule(this, "slackRule", {
             eventBus: bus,
@@ -89,7 +95,7 @@ export class HTTPAPIStack extends Stack {
             eventPattern: {}
         });
 
-        const slackMsgFn = new NodejsFunction(this, "slack-msg-function", {
+        const slackMsgFn = new NodejsFunction(this, "slack-msg-handler", {
             entry: path.resolve(
                 path.dirname(__filename),
                 "../functions/slack-message/index.ts"
@@ -99,4 +105,6 @@ export class HTTPAPIStack extends Stack {
 
         slackRule.addTarget(new eventsTargets.LambdaFunction(slackMsgFn));
     }
+
+    setupDynamoDB() {}
 }

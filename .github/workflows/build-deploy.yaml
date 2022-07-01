@@ -26,11 +26,11 @@ jobs:
             - name: Install
               run: npm ci
 
-            - name: Build
-              run: npm run build --if-present
+            # - name: Build
+            #   run: npm run build --if-present
 
-            - name: Test
-              run: npm run test
+            # - name: Test
+            #   run: npm run test
 
             # Step 4 starts here !!!
             # - name: Deploy
