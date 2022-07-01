@@ -69,7 +69,7 @@ export class CoreStack extends Stack {
         });
         slackEventFn.addToRolePolicy(eventPolicy);
 
-        // Lambda Func Integration
+        // Lambda Func Integration for the HTTP API
         const eventIntegration = new HttpLambdaIntegration(
             "EventIntegration",
             slackEventFn
@@ -92,7 +92,9 @@ export class CoreStack extends Stack {
         const slackRule = new events.Rule(this, "slackRule", {
             eventBus: bus,
             description: "Event Rule For Slack Link Shared Events",
-            eventPattern: {}
+            eventPattern: {
+                source: ["custom.Podgasim"]
+            }
         });
 
         const slackMsgFn = new NodejsFunction(this, "slack-msg-handler", {
