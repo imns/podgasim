@@ -88,21 +88,29 @@ export class CoreStack extends Stack {
     }
 
     setupEventBus() {
+        const EVENT_BUS_SOURCE = process.env.DomainName?.split("")
+            .reverse()
+            .join("");
+
         const bus = new events.EventBus(this, "EventBus", {});
         const slackRule = new events.Rule(this, "slackRule", {
             eventBus: bus,
             description: "Event Rule For Slack Link Shared Events",
             eventPattern: {
-                source: ["custom.Podgasim"]
+                // source: [EVENT_BUS_SOURCE!]
             }
         });
 
-        const slackMsgFn = new NodejsFunction(this, "slack-msg-handler", {
+        const slackMsgFn = new NodejsFunction(this, "SlackMsgHandler", {
             entry: path.resolve(
                 path.dirname(__filename),
                 "../functions/slack-message/src/index.ts"
             ),
-            handler: "handler"
+            handler: "handler",
+            environment: {
+                EVENT_BUS_NAME: bus.eventBusName,
+                EVENT_BUS_SOURCE: EVENT_BUS_SOURCE!
+            }
         });
 
         slackRule.addTarget(new eventsTargets.LambdaFunction(slackMsgFn));

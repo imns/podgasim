@@ -3,6 +3,9 @@ import { EventBridge } from "aws-sdk";
 
 const eventBridge = new EventBridge();
 
+const EVENT_BUS_NAME = process.env.EVENT_BUS_NAME;
+const EVENT_BUS_SOURCE = process.env.EVENT_BUS_SOURCE;
+
 export async function handler(
     event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> {
@@ -59,9 +62,9 @@ async function putEvent(event: any) {
     const params = {
         Entries: [
             {
-                DetailType: "httpcall",
-                EventBusName: "default",
-                Source: "cdkpatterns.eventbridge.circuitbreaker",
+                // DetailType: "httpcall",
+                EventBusName: EVENT_BUS_NAME,
+                Source: EVENT_BUS_SOURCE,
                 Time: new Date(),
                 // Main event body
                 Detail: JSON.stringify(event)
