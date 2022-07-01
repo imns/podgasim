@@ -26,12 +26,16 @@ export class CoreStack extends Stack {
 
         const domainNameConstruct = props.domainName;
 
-        this.setupAPI(domainNameConstruct);
-        this.setupEventBus();
+        const { eventBusName, eventBusSource } = this.setupEventBus();
+        this.setupAPI(domainNameConstruct, eventBusName, eventBusSource);
         this.setupDynamoDB();
     }
 
-    setupAPI(domainNameConstruct: DomainName) {
+    setupAPI(
+        domainNameConstruct: DomainName,
+        eventBusName: string,
+        eventBusSource: string
+    ) {
         const httpApi = new HttpApi(this, "HttpApi", {
             defaultDomainMapping: {
                 domainName: domainNameConstruct
@@ -58,7 +62,11 @@ export class CoreStack extends Stack {
                 path.dirname(__filename),
                 "../functions/slack-events/index.ts"
             ),
-            handler: "handler"
+            handler: "handler",
+            environment: {
+                EVENT_BUS_NAME: eventBusName,
+                EVENT_BUS_SOURCE: eventBusSource
+            }
         });
 
         // We need to give your lambda permission to put events on our EventBridge
@@ -108,14 +116,19 @@ export class CoreStack extends Stack {
                 path.dirname(__filename),
                 "../functions/slack-message/src/index.ts"
             ),
-            handler: "handler",
-            environment: {
-                EVENT_BUS_NAME: bus.eventBusName,
-                EVENT_BUS_SOURCE: EVENT_BUS_SOURCE
-            }
+            handler: "handler"
+            // environment: {
+            //     EVENT_BUS_NAME: bus.eventBusName,
+            //     EVENT_BUS_SOURCE: EVENT_BUS_SOURCE
+            // }
         });
 
         slackRule.addTarget(new eventsTargets.LambdaFunction(slackMsgFn));
+
+        return {
+            eventBusName: bus.eventBusName,
+            eventBusSource: EVENT_BUS_SOURCE
+        };
     }
 
     setupDynamoDB() {}

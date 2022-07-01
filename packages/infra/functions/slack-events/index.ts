@@ -11,6 +11,9 @@ export async function handler(
 ): Promise<APIGatewayProxyResultV2> {
     console.log(JSON.stringify(event, null, 2));
     try {
+        console.log("///// process.env /////");
+        console.log(JSON.stringify(process.env, null, 2));
+
         const eventData = JSON.parse(event.body!);
         // console.log("///// EVENT BODY /////");
         // console.log(JSON.stringify(eventData, null, 2));
