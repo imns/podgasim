@@ -90,7 +90,7 @@ export class CoreStack extends Stack {
     setupEventBus() {
         // Reverse the Domain Name, like a Java Package (I feel gross about it too)
         const EVENT_BUS_SOURCE = process.env
-            .DomainName!.split(".")
+            .DOMAIN_NAME!.split(".")
             .reverse()
             .join(".");
 
