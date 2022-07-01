@@ -12,8 +12,8 @@ export async function handler(
     console.log(JSON.stringify(event, null, 2));
     try {
         const eventData = JSON.parse(event.body!);
-        console.log("///// EVENT BODY /////");
-        console.log(JSON.stringify(eventData, null, 2));
+        // console.log("///// EVENT BODY /////");
+        // console.log(JSON.stringify(eventData, null, 2));
 
         console.log(`EVENT TYPE: ${eventData.type!}`);
         if (eventData?.type === "url_verification") {
@@ -74,8 +74,10 @@ async function putEvent(event: any) {
             ]
         };
 
+        console.log("Params for eventBridge.putEvents:");
+        console.log(params);
         const result = await eventBridge.putEvents(params).promise();
-        console.log("Results of  eventBridge.putEvents: ");
+        console.log("Results of eventBridge.putEvents: ");
         console.log(JSON.stringify(result, null, 2));
     } catch (e) {
         console.log("ERROR in putEvent()");

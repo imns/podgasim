@@ -53,7 +53,7 @@ export class CoreStack extends Stack {
         this.apiURL = httpApi.url!;
 
         // lambda integration
-        const slackEventFn = new NodejsFunction(this, "slack-events-handler", {
+        const slackEventFn = new NodejsFunction(this, "SlackEventsHandler", {
             entry: path.resolve(
                 path.dirname(__filename),
                 "../functions/slack-events/index.ts"
