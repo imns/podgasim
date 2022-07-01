@@ -11,12 +11,9 @@ export async function handler(
 ): Promise<APIGatewayProxyResultV2> {
     console.log(JSON.stringify(event, null, 2));
     try {
-        console.log("///// process.env /////");
-        console.log(JSON.stringify(process.env, null, 2));
-
         const eventData = JSON.parse(event.body!);
-        // console.log("///// EVENT BODY /////");
-        // console.log(JSON.stringify(eventData, null, 2));
+        console.log("///// EVENT BODY /////");
+        console.log(JSON.stringify(eventData, null, 2));
 
         console.log(`EVENT TYPE: ${eventData.type!}`);
         if (eventData?.type === "url_verification") {
@@ -35,7 +32,7 @@ export async function handler(
             console.log(`API EVENT TYPE: ${eventData.event.type!}`);
 
             // send to event bridge
-            await putEvent(eventData.event);
+            await putEvent(eventData);
             console.log("Added event data to event bus");
 
             return {
