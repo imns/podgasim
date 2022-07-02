@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const SLACK_BOT_USER_TOKEN = process.env.SLACK_BOT_USER_TOKEN;
+
 // https://api.slack.com/methods/chat.postMessage
 // interface CreateMessageResponse = {
 //     ok: boolean;
@@ -31,7 +33,7 @@ export async function handler(event: any) {
             {
                 headers: {
                     "Content-Type": "application/json; charset=utf-8",
-                    Authorization: `Bearer 0afec80f8d84c8d629fffa112c666c18`
+                    Authorization: `Bearer ${SLACK_BOT_USER_TOKEN}`
                     // Accept: "application/json"
                 }
             }

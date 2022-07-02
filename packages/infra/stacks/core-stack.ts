@@ -116,11 +116,10 @@ export class CoreStack extends Stack {
                 path.dirname(__filename),
                 "../functions/slack-message/src/index.ts"
             ),
-            handler: "handler"
-            // environment: {
-            //     EVENT_BUS_NAME: bus.eventBusName,
-            //     EVENT_BUS_SOURCE: EVENT_BUS_SOURCE
-            // }
+            handler: "handler",
+            environment: {
+                SLACK_BOT_USER_TOKEN: process.env.SLACK_BOT_USER_TOKEN!
+            }
         });
 
         slackRule.addTarget(new eventsTargets.LambdaFunction(slackMsgFn));
