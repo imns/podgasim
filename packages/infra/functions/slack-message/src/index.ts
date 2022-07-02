@@ -1,17 +1,26 @@
 import axios from "axios";
 
 // https://api.slack.com/methods/chat.postMessage
-type CreateMessageResponse = {
-    ok: boolean;
-    channel: string;
-};
+// interface CreateMessageResponse = {
+//     ok: boolean;
+//     channel: string;
+// };
+
+interface EventBus {}
+
+interface SlackEvent {}
 
 export async function handler(event: any) {
     console.log(JSON.stringify(event, null, 2));
     try {
-        const { token, channel } = event;
+        const { token, event: linkEvent, api_app_id, team_id } = event.detail;
+        const { channel, links } = linkEvent;
+
+        console.log("Links:");
+        console.log(JSON.stringify(links, null, 2));
+
         const { data } = await axios.post(
-            "https://reqres.in/api/users",
+            "https://slack.com/api/chat.postMessage",
             {
                 token: token,
                 channel: channel,
@@ -21,8 +30,9 @@ export async function handler(event: any) {
             },
             {
                 headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json"
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: `Bearer 0afec80f8d84c8d629fffa112c666c18`
+                    // Accept: "application/json"
                 }
             }
         );

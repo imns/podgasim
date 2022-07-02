@@ -9,7 +9,7 @@ const EVENT_BUS_SOURCE = process.env.EVENT_BUS_SOURCE;
 export async function handler(
     event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> {
-    console.log(JSON.stringify(event, null, 2));
+    // console.log(JSON.stringify(event, null, 2));
     try {
         const eventData = JSON.parse(event.body!);
         console.log("///// EVENT BODY /////");
